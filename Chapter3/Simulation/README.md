@@ -13,6 +13,6 @@ Unique solutions in the joint EE are not guaranteed.
 The sampling weights of S_R are calculable for units of S_A.
 The function uses three different propensity approaches:
 
-PMLE proposed by Chen et al (2019)
-PAPP proposed by Rafei et al (2020)
-IPSW proposed by Wang et al (2020)
+PMLE proposed by Chen et al (2020)\\
+PAPP proposed by Rafei et al (2021)\\
+IPSW proposed by Wang et al (2021)\\
