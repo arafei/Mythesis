@@ -446,3 +446,4 @@ cal_bs <- function(psmp, nsmp, method=c("PSDO0", "PSDO1", "IPS", "IPSW", "PSPP",
 	}
 	output
 }
+
