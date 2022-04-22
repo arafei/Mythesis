@@ -51,6 +51,7 @@ nXz <- c("Age_g", "modelYear_g", "vehMake", "hospDay_g", "resUse", "bagDep", "de
 nXy_head <- c("Age_g", "vehType", "defLoc", "injScale", "Fatal")
 nXy_abd <- c("Age_g", "vehMake", "vehType", "resUse", "defLoc", "damDist", "deltaV", "injScale", "Fatal")
 nXy_thrx <- c("Sex", "Age_g", "modelYear_g", "bagDep", "Rollover", "hospDay_g", "damDist", "deltaV", "injScale")
+nXy_lext <- c("Sex", "Age_g", "modelYear_g", "resUse", "Rollover", "hospDay_g", "damDist", "deltaV", "injScale", "Fatal")
 nXy_spin <- c("Age_g", "modelYear_g", "seatRow", "Rollover", "hospDay_g", "damDist", "injScale")
 
 # drop item-level missingness in covariates
@@ -80,9 +81,9 @@ CIREN_CDS1$pw_PAPP <- CIREN_CDS1$wght*(1-CIREN_CDS1$Pz)/CIREN_CDS1$Pz
 N <- round(sum(CIREN_CDS1$wght[CIREN_CDS1$Z==0]))
 
 # Normalizing estimated pseudo-weights
-CIREN_CDS2$pw_PAPP[CIREN_CDS1$Z==1] <- N*CIREN_CDS2$pw_PAPP[CIREN_CDS1$Z==1]/sum(CIREN_CDS1$pw_PAPP[CIREN_CDS1$Z==1], na.rm=T)
-CIREN_CDS2$pw_IPSW[CIREN_CDS1$Z==1] <- N*CIREN_CDS2$pw_IPSW[CIREN_CDS1$Z==1]/sum(CIREN_CDS1$pw_IPSW[CIREN_CDS1$Z==1], na.rm=T)
-CIREN_CDS2$pw_PMLE[CIREN_CDS1$Z==1] <- N*CIREN_CDS2$pw_PMLE[CIREN_CDS1$Z==1]/sum(CIREN_CDS1$pw_PMLE[CIREN_CDS1$Z==1], na.rm=T)
+CIREN_CDS1$pw_PAPP[CIREN_CDS1$Z==1] <- N*CIREN_CDS1$pw_PAPP[CIREN_CDS1$Z==1]/sum(CIREN_CDS1$pw_PAPP[CIREN_CDS1$Z==1], na.rm=T)
+CIREN_CDS1$pw_IPSW[CIREN_CDS1$Z==1] <- N*CIREN_CDS1$pw_IPSW[CIREN_CDS1$Z==1]/sum(CIREN_CDS1$pw_IPSW[CIREN_CDS1$Z==1], na.rm=T)
+CIREN_CDS1$pw_PMLE[CIREN_CDS1$Z==1] <- N*CIREN_CDS1$pw_PMLE[CIREN_CDS1$Z==1]/sum(CIREN_CDS1$pw_PMLE[CIREN_CDS1$Z==1], na.rm=T)
 
 #draw the box-plot of estimated pseudo-weights in CIREN
 mm <- factor(c(rep(0, nrow(CIREN_CDS1[CIREN_CDS1$Z==0, ])), rep(1:2, rep(nrow(CIREN_CDS1[CIREN_CDS1$Z==1, ]), 2))), levels=0:2, labels=c("CDS_WGHT", c("CIREN_PAPP", "CIREN_PMLE")))
@@ -374,25 +375,25 @@ dev.off()
 
 
 #######################################################
-#									#
-#                    AIPW estimation			#
-#									#
+#									                                    #
+#                    AIPW estimation			            #
+#									                                    #
 #######################################################
 
 CIREN_CDS2 <- CIREN_CDS1[complete.cases(CIREN_CDS1[, union(nXz, nXy_head)]), ]
-out10_head <- AIPW_KH(y=CIREN_CDS2$Head, x=model.matrix(~., data=CIREN_CDS2[, nXy_head])[, -1], deltaR=CIREN_CDS2$Z, sw=CIREN_CDS2$wght, method=c("PAPP", "PMLE", "IPSW", "PM", "AIPW"), family='binomial')
+out10_head <- AIPW_KH(y=CIREN_CDS2$Head, x=model.matrix(~., data=CIREN_CDS2[, nXy_head])[, -1], deltaA=CIREN_CDS2$Z, sw=CIREN_CDS2$wght, method=c("PAPP", "PMLE", "IPSW", "PM", "AIPW"), family='binomial')
 
 CIREN_CDS2 <- CIREN_CDS1[complete.cases(CIREN_CDS1[, union(nXz, nXy_abd)]), ]
-out10_abd  <- AIPW_KH(y=CIREN_CDS2$Abd , x=model.matrix(~., data=CIREN_CDS2[, nXy_abd ])[, -1], deltaR=CIREN_CDS2$Z, sw=CIREN_CDS2$wght, method=c("PAPP", "PMLE", "IPSW", "PM", "AIPW"), family='binomial')
+out10_abd  <- AIPW_KH(y=CIREN_CDS2$Abd , x=model.matrix(~., data=CIREN_CDS2[, nXy_abd ])[, -1], deltaA=CIREN_CDS2$Z, sw=CIREN_CDS2$wght, method=c("PAPP", "PMLE", "IPSW", "PM", "AIPW"), family='binomial')
 
 CIREN_CDS2 <- CIREN_CDS1[complete.cases(CIREN_CDS1[, union(nXz, nXy_thrx)]), ]
-out10_thrx <- AIPW_KH(y=CIREN_CDS2$Thrx, x=model.matrix(~., data=CIREN_CDS2[, nXy_thrx])[, -1], deltaR=CIREN_CDS2$Z, sw=CIREN_CDS2$wght, method=c("PAPP", "PMLE", "IPSW", "PM", "AIPW"), family='binomial')
+out10_thrx <- AIPW_KH(y=CIREN_CDS2$Thrx, x=model.matrix(~., data=CIREN_CDS2[, nXy_thrx])[, -1], deltaA=CIREN_CDS2$Z, sw=CIREN_CDS2$wght, method=c("PAPP", "PMLE", "IPSW", "PM", "AIPW"), family='binomial')
 
 CIREN_CDS2 <- CIREN_CDS1[complete.cases(CIREN_CDS1[, union(nXz, nXy_lext)]), ]
-out10_lext <- AIPW_KH(y=CIREN_CDS2$Lext, x=model.matrix(~., data=CIREN_CDS2[, nXy_lext])[, -1], deltaR=CIREN_CDS2$Z, sw=CIREN_CDS2$wght, method=c("PAPP", "PMLE", "IPSW", "PM", "AIPW"), family='binomial')
+out10_lext <- AIPW_KH(y=CIREN_CDS2$Lext, x=model.matrix(~., data=CIREN_CDS2[, nXy_lext])[, -1], deltaA=CIREN_CDS2$Z, sw=CIREN_CDS2$wght, method=c("PAPP", "PMLE", "IPSW", "PM", "AIPW"), family='binomial')
 
 CIREN_CDS2 <- CIREN_CDS1[complete.cases(CIREN_CDS1[, union(nXz, nXy_spin)]), ]
-out10_spin <- AIPW_KH(y=CIREN_CDS2$Spin, x=model.matrix(~., data=CIREN_CDS2[, nXy_spin])[, -1], deltaR=CIREN_CDS2$Z, sw=CIREN_CDS2$wght, method=c("PAPP", "PMLE", "IPSW", "PM", "AIPW"), family='binomial')
+out10_spin <- AIPW_KH(y=CIREN_CDS2$Spin, x=model.matrix(~., data=CIREN_CDS2[, nXy_spin])[, -1], deltaA=CIREN_CDS2$Z, sw=CIREN_CDS2$wght, method=c("PAPP", "PMLE", "IPSW", "PM", "AIPW"), family='binomial')
 
 #################################################
 
@@ -511,7 +512,7 @@ out4 <- ggplot(data = result1[-(2), ], aes(Method, Lext, shape=Study, colour=Rob
     	  theme_bw(base_size = 30) + 
 	  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), plot.title = element_text(hjust = 0.5), legend.position="none", axis.text.x = element_text(angle = 20, hjust = 1))
 
-out4 <- ggplot(data = result1[-(2), ], aes(Method, Spin, shape=Study, colour=Robust)) +
+out5 <- ggplot(data = result1[-(2), ], aes(Method, Spin, shape=Study, colour=Robust)) +
     	  geom_point(size = 6, position=position_dodge(width=0.5)) +
 	  geom_rect(data = NULL, aes(xmin = 0, xmax = 8, ymin = result1[2, 11], ymax = result1[2, 16]), alpha=0.05, color = NA)+
 	  geom_hline(yintercept = result1[2, 6], colour="red", linetype="dashed", size=1) +
